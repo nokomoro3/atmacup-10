@@ -1,98 +1,33 @@
 
-## 初版の作戦
+# atmacup #10
 
-- train.csv/test.csv
-  - 正解
-    - like: 作品につけられたいいねの数。0以上の整数。この値が予測対象です。
-  - 使用中
-    - カテゴリ変数として
-      - principal_maker ... 製作者。相関はあると思うが、testにはtrainにはいない製作者がいる模様。これにどう対処するか。
-      - principal_or_first_maker ... principal_makerがあればいらない気もする。
-      - copyright_holder ... 権利保持者。結構少ないカテゴリ。しかしこれもtrainにないやつがある。
-      - acquisition_method ... tr/ttで重複しているので使える。NaNはunknownにすべきだろう。カテゴリ変数。
-      - acquisition_credit_line ... 誰から誰へのgift化などの情報。
-      - dating_year_early: 製作期間の始まり・年
-      - dating_year_late: 製作期間のおわり・年
-      - dating_period: 制作のされた世紀。開始と終了があればいらない気がする。
-    - 数値として
-      - dating_interval ... 製作期間の長さ
-  - 未使用
-    - object_id ... 単なる識別子(重複なし)
-    - art_series_id ... 同じシリーズを示すID。train/testに重複はない。
-    - acquisition_date ... 収集したタイムスタンプ。年月くらいは使ってカテゴリ変数にするか。
-    - title, desc, long_title, more title ... likeと相関の高い単語があれば有効かもしれない。
-      - BERT ... オランダ語に対応していないのでムズイ。google翻訳で一旦英語に変換するか？
-      - Word2Vec ... 単純な空白区切りで学習する。
-    - sub_title ... サイズ情報だが、h,w,t,dとあり、t,dの違いが判らん。使えなくはないかも
-  - 使わない気がしているもの
-    - dating_presenting_date ... 製作期間。使わない。後述の情報があれば不要そう。  
-    - dating_sorting_date: 並び替え表示の際に用いられる代表年。始まりと同じだからいらないんじゃね？
+## 最終スコア
+- Public: 0.9569 (28th)
+- Private: 0.9801 (27th)
 
-## ver.2
+## CV/LBの遷移
 
-### 分析
-
-- train.csv/test.csv
-  - ★タイトルの言語情報を使う。
-    - 訪問者が英語メインであることを考えると、英語がlikesの傾向が高くなるのは間違いなさそうだが。。。
-    - https://www.guruguru.science/competitions/16/discussions/f463dac2-4233-42d2-8629-ca99a9689987/
-    - windowsにpycld2やfasttextをインストールするのが少し難しい…
-  - ★タイトルの単純なTFIDF
-  - ★sub_titleの使用
-    - https://www.guruguru.science/competitions/16/discussions/556029f7-484d-40d4-ad6a-9d86337487e2/
-- color.csv
-  - 今は使わない。
-    - paletteを使えば十分かな。
-- historical_person.csv
-  - ★歴史的な人物がいるかどうかは重要かも。人物数で数値化する。
-- maker.csv
-  - 今は使わない。
-    - 作家の情報。年数は、制作年があれば十分な気がするのでまずは使わない。
-    - 国名はカラムだけでデータがない。生誕場所、没場所もあるけど、関係あるかなぁ？
-- materials.csv
-  - 素材情報
-  - ★カテゴリ変数としていれていいのではないか。
-- object_collection.csv
-  - 形式
-  - ★カテゴリ変数としていれていいのではないか。
-- paltette.csv
-  - 色情報
-  - 複数の色があるので、特徴量は色々考えられる。
-    - ★全体的な色味
-    - ★輝度分散、色差分散、RGB分散くらいかなぁ
-- principal_maker
-- principal_maker_occupation
-  - ★関わった人数の数くらいは使っていい
-  - あとは作家をベクトル化した後には使えるけど、時間がかかるので今はいいかな。
-  - ベクトルかはTargetEncodingでもいいか。
-- production_place
-  - 形式
-  - ★カテゴリ変数としていれていいのではないか。
-- その他
-  - Catboost(HighCardinalityのため有効化かも)
-  - TargetEncoding
-
-### 順序
-- CV/LB乖離の対策
-  - 済：StraightKFold, GroupKFoldを使う。
-    - https://www.guruguru.science/competitions/16/discussions/092c2925-6a63-4e65-8057-6ea50fc660dd/
-- モデル
-  - 済：Catboostの使用
-- 追加情報の使用
-  - 済：historical_person.csv
-    - 歴史的な人物がいるかどうかは重要かも。人物数で数値化する。
-  - 済materials.csv/object_collection.csv
-    - 済：工夫なしでカテゴリ変数として追加
-  - production_placeは国名に変更
-    - https://www.guruguru.science/competitions/16/discussions/970ced6d-f974-4979-8f04-dbcf1c2f51a0/
-  - principal_maker
-    - 人数のみ
-  - 済：paltette.csv
-    - 済：全体の色
-    - 済：輝度分散、色差分散、RGB分散
-  - タイトル
-    - 済：タイトルの言語判定結果
-    - TFIDF
-  - 済：sub_titleの使用
-    - 済：https://www.guruguru.science/competitions/16/discussions/556029f7-484d-40d4-ad6a-9d86337487e2/
-  - Box-Cox
+|fileName|CV|LB|desc|
+|:---|:---|:---|:---|
+|submission_20th   | 忘却 | 0.9590 | optunaで調整 |
+|submission_19th   | - | - | バグ |
+|submission_18th   | 0.9990 | 0.9569 | w2v追加 |
+|submission_17.2th | 0.9916 | 0.9569 | category化修正漏れ |
+|submission_17th   | 0.9908 | 0.9582 | maker情報追加 |
+|submission_16th   | 0.9930 | 0.9590 | 場所情報追加 |
+|submission_15th   | 0.9901 | 0.9630 | 不明ラベルの共通カテゴリ化 |
+|submission_14.2th | 0.9953 | 0.9646 | LGMBパラメタ調整2 |
+|submission_14.1th | 1.0004 | 0.9639 | LGMBパラメタ調整1 |
+|submission_14th   | 1.0004 | 0.9660 | color統計情報追加。<br>palette見直し。<br>収集日を数値化特徴量として使用。|
+|submission_13th   | 1.0051 | 0.9763 | word2vecを追加|
+|submission_12th   | 1.0032 | 0.9723 | 講座#2を参考に、TDIDF追加。|
+|submission_11th   | 1.0374 | 1.0445 | 構成変更。<br>講座#2を参考に、countEncoding追加。<br>pallet計算の特徴量を追加。|
+|submission_10th   | 1.0546 | 1.0445 | technique, object_collection情報をone-hotで追加。<br>講座#1を参考に文字列長とCountEncodingを追加。 |
+|submission_9th    | 1.0705 | 1.0480 | 言語情報をdesc, more_titleなどに拡大<br>material情報をone-hotで追加。 |
+|submission_8th    | 1.0903 | 1.0608 | size追加 |
+|submission_7th    | 1.1193 | 1.0949 | titleの言語情報使用 |
+|submission_6th    | 1.1407 | 1.1205 | パレット統計情報使用 |
+|submission_5th    | 1.2228 | 1.2081 | catboost使用 |
+|submission_4th    | 1.2383 | 1.2334 | CV/LBの乖離修正 |
+|submission_3rd    | 1.1409 | 1.2396 | CV/LBの乖離修正(整数化にバグ) |
+|submission_2nd    | 1.2418 | 1.2018 | ベースライン |
