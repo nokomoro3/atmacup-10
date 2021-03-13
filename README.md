@@ -1,0 +1,2 @@
+# atmacup
+atmaCupコンペ用
