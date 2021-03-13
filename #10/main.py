@@ -15,12 +15,8 @@ from matplotlib_venn import venn2
 from pandas_profiling import ProfileReport # profile report を作る用
 
 import feats
-import trainers
 import vis
 import tuning
-
-def calc_loss(y_true, y_pred):
-    return  np.sqrt(mean_squared_error(y_true, y_pred))
 
 def main(input_path, output_path):
     train_path = input_path.joinpath("train.csv")
