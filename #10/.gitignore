@@ -1,0 +1,5 @@
+*.pyc
+.vscode
+!.gitignore
+*.pkl
+*.bin
