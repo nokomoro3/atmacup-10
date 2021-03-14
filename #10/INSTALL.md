@@ -1,24 +1,31 @@
 # INSTALL
 
-## install general packages
+## activate venv
 ```bash
-pip3 install -r requirements.txt
+$ python3 -m venv .venv
+$ source .venv/bin/activate
+(.venv) $
+```
+
+## install packages
+```
+(.venv) $ pip3 install -r requirements.txt
 ```
 
 # install of fastText
 - install package in this command.
 ```bash
-git clone https://github.com/facebookresearch/fastText.git
-pip3 install fastText
-rm -rf fastText
+(.venv) $ git clone https://github.com/facebookresearch/fastText.git
+(.venv) $ pip3 install fastText
+(.venv) $ rm -rf fastText
 ```
 
 - and download a model in this command.
 ```bash
-wget https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin
+(.venv) $ wget https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin
 ```
 
-# install jupyter
+# if you need, install jupyter
 ```bash
-sudo apt install jupyter-notebook
+(.venv) $ sudo apt install jupyter-notebook
 ```
