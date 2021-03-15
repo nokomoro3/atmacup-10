@@ -18,8 +18,6 @@ import hashlib
 import colorsys
 from sklearn.model_selection import StratifiedKFold
 
-os.environ["PYTHONHASHSEED"] = "0"
-
 class AbstractBaseBlock:
     """特徴量作成ブロックのベースクラス"""
     def fit(self, input_df: pd.DataFrame, y=None):
@@ -243,8 +241,9 @@ class Word2VecExternalTableBlock(AbstractBaseBlock):
             for w in re.split('[^A-Za-z0-9]+', words):
                 vocab.add(w)
 
+        os.environ["PYTHONHASHSEED"] = "0"
         w2v_model = word2vec.Word2Vec(df_group["name"].values.tolist(),
-            size=len(vocab), min_count=1, window=1, iter=100, hashfxn=hashfxn)
+            size=len(vocab), min_count=1, window=1, iter=100, hashfxn=hashfxn, workers=1)
 
         sentence_vectors = df_group["name"].apply(
             lambda x: np.mean([w2v_model.wv[e] for e in x], axis=0)
@@ -560,8 +559,9 @@ class Word2VecBlock(AbstractBaseBlock):
         else:
             size=len(vocab)
 
+        os.environ["PYTHONHASHSEED"] = "0"
         w2v_model = word2vec.Word2Vec(sentences_df[self.column].values.tolist(),
-            size=size, min_count=1, window=1, iter=100, hashfxn=hashfxn)
+            size=size, min_count=1, window=1, iter=100, hashfxn=hashfxn, workers=1)
 
         sentence_vectors = sentences_df[self.column].apply(
             lambda x: np.mean([w2v_model.wv[e] for e in x], axis=0)
