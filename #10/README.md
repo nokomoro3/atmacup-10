@@ -1,7 +1,18 @@
 
 # atmacup #10
 
+## 環境設定
+
+[INSTALL.md](./INSTALL.md)を参照ください。
+
+## 実行方法
+
+```sh
+(.venv) $ python3 main.py
+```
+
 ## 最終スコア
+
 - Public: 0.9569 (28th)
 - Private: 0.9801 (27th)
 
