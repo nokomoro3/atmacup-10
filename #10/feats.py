@@ -17,6 +17,7 @@ import os
 import hashlib
 import colorsys
 from sklearn.model_selection import StratifiedKFold
+import category_encoders as ce
 
 class AbstractBaseBlock:
     """特徴量作成ブロックのベースクラス"""
@@ -96,56 +97,24 @@ class OneHotEncoding(AbstractBaseBlock):
         out_df.columns = out_df.columns.tolist()
         return out_df.add_prefix(f'{self.column}=')
 
-# class TargetEncodingBlock(AbstractBaseBlock):
-#     """文字列データの種類毎に数値を割り当てるラベルエンコード"""
-#     def __init__(self, column: str):
-#         self.column = column
+class TargetEncodingBlock(AbstractBaseBlock):
+    """文字列データの種類毎に数値を割り当てるラベルエンコード"""
+    def __init__(self, column: str):
+        self.column = column
 
-#     def fit(self, input_df, y=None):
+    def fit(self, input_df, y=None):
 
-#         cat_features = [self.column]
-#         cbe = CatBoostEncoder(cols=cat_features)
+        train_df = input_df[~(input_df.likes.isnull())]
 
-#         X = input_df.drop(['likes'],axis=1)
-#         y = input_df[['likes']]
+        self.cbe = ce.JamesSteinEncoder(cols=self.column, drop_invariant=True)
+        self.cbe.fit(train_df[self.column], train_df['likes'])
+
+        return
         
-#         cbe.fit(input_df[cat_features],input_df[['likes']])
-
-#         input_df=input_df.join(cbe.transform(input_df[cat_features]).add_suffix('_target'))
-#         input_df.drop(cat_features,axis=1,inplace=True)
-
-#         input_df=input_df.join(cbe.transform(input_df[cat_features]).add_suffix('_target'))
-#         input_df.drop(cat_features,axis=1,inplace=True)
-
-#         # train_df = input_df[~(input_df.likes.isnull())]
-
-#         # agg_df = train_df.groupby(self.column).agg({'likes': ['sum', 'count']})
-
-#         # folds = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
-
-#         # ts = pd.Series(np.empty(input_df.shape[0]), index=input_df.index)       
-#         # for _, holdout_idx in folds.split(input_df, input_df.likes):
-#         #     # ホールドアウトする行を取り出す
-#         #     holdout_df = input_df.iloc[holdout_idx]
-
-#         #     # ホールドアウトしたデータで合計とカウントを計算する
-#         #     holdout_agg_df = holdout_df.groupby(self.column).agg({'likes': ['sum', 'count']})
-
-#         #     # 全体の集計からホールドアウトした分を引く
-#         #     train_agg_df = agg_df - holdout_agg_df
-
-#         #     # ホールドアウトしたデータの平均値を計算していく
-#         #     oof_ts = holdout_df.apply(lambda row: train_agg_df.loc[row.likes][('likes', 'sum')] \
-#         #                                           / (train_agg_df.loc[row.likes][('likes', 'count')] + 1), axis=1)
-#         #     # 生成した特徴量を記録する
-#         #     ts[oof_ts.index] = oof_ts
-
-#         # print(ts)
-        
-#     def transform(self, input_df):
-#         out_df = pd.DataFrame()
-#         out_df[self.column] = self.label_enc.transform(input_df[self.column])
-#         return out_df
+    def transform(self, input_df):
+        out_df = pd.DataFrame()
+        out_df[self.column] = self.cbe.transform(input_df[self.column])[self.column]
+        return out_df
 
 class ObjectSizeBlock(AbstractBaseBlock):
     """オブジェクトのサイズ情報を抽出した特徴量"""

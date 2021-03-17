@@ -121,6 +121,9 @@ def main(input_path, output_path):
             'dating_sorting_date', 'dating_period', 'dating_year_early',
             'dating_year_late',
         ]],
+        # *[feats.TargetEncodingBlock(c) for c in [
+        #     'principal_maker',
+        # ]],
         *[feats.StringLengthBlock(c) for c in [
             'title', 'description', 'long_title',
             'principal_maker', 'principal_or_first_maker', 'sub_title',
@@ -152,10 +155,10 @@ def main(input_path, output_path):
         # ]],
 
         # palette統計情報
-        feats.PaletteStatsBlock(input_path.joinpath("palette.csv"), pathlib.Path(".").joinpath("palette_stats.pkl"), reload=True),
+        feats.PaletteStatsBlock(input_path.joinpath("palette.csv"), pathlib.Path(".").joinpath("palette_stats.pkl"), reload=False),
 
         # color統計情報
-        feats.ColorStatsBlock(input_path.joinpath("color.csv"), pathlib.Path(".").joinpath("color_stats.pkl"), reload=True),
+        feats.ColorStatsBlock(input_path.joinpath("color.csv"), pathlib.Path(".").joinpath("color_stats.pkl"), reload=False),
 
         # 言語判定結果
         *[feats.LanguageIdentificationBlock(c, pathlib.Path(".").joinpath("lid.176.bin")) for c in [
