@@ -6,7 +6,9 @@ atmaCup #10コンペ用レポジトリ
 - https://www.guruguru.science/competitions/16/
 
 ## solutionについての解説
-- https://www.guruguru.science/competitions/16/discussions/71f8aca0-9b16-4d5f-942b-62db9acd5055/
+- [docs/solution.md](./docs/solution.md)を参照ください。
+- 以下のディスカッションにも登録しています。
+  - https://www.guruguru.science/competitions/16/discussions/71f8aca0-9b16-4d5f-942b-62db9acd5055/
 
 ## 環境設定
 
